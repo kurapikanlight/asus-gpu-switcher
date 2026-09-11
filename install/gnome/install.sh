@@ -5,19 +5,12 @@ set -euo pipefail
 # ============================================================
 # ASUS GPU Switcher
 # GNOME Installer
-#
-# Supports GNOME on any Linux distribution.
-# Requires:
-#   - GNOME Shell
-#   - gnome-extensions
-#   - asusctl / asusd
-#   - ASUS Armoury GPU controls
 # ============================================================
 
 REPO="kurapikanlight/asus-gpu-switcher"
 UUID="asus-gpu-switcher@kurapikanlight"
-ZIP_NAME="asus-gpu-switcher.zip"
-DOWNLOAD_URL="https://github.com/${REPO}/releases/latest/download/${ZIP_NAME}"
+TAR_URL="https://github.com/${REPO}/archive/refs/heads/main.tar.gz"
+EXT_DIR="${HOME}/.local/share/gnome-shell/extensions/${UUID}"
 
 echo
 echo "=========================================="
@@ -26,183 +19,70 @@ echo "=========================================="
 echo
 
 # ------------------------------------------------------------
-# Check GNOME
+# System Checks
 # ------------------------------------------------------------
 
-if [[ "${XDG_CURRENT_DESKTOP:-}" != *"GNOME"* ]] &&
-   [[ "${XDG_SESSION_DESKTOP:-}" != *"gnome"* ]] &&
+if [[ "${XDG_CURRENT_DESKTOP:-}" != *"GNOME"* ]] && \
+   [[ "${XDG_SESSION_DESKTOP:-}" != *"gnome"* ]] && \
    [[ "${DESKTOP_SESSION:-}" != *"gnome"* ]]; then
-
     echo "ERROR: GNOME was not detected."
-    echo
-    echo "This installer is for the GNOME frontend."
     exit 1
 fi
-
-echo "[OK] GNOME detected."
-
-# ------------------------------------------------------------
-# Check gnome-extensions
-# ------------------------------------------------------------
 
 if ! command -v gnome-extensions >/dev/null 2>&1; then
-    echo
-    echo "ERROR: gnome-extensions was not found."
-    echo
-    echo "Please install the GNOME Shell Extensions tools"
-    echo "using your distribution's package manager."
+    echo "ERROR: gnome-extensions command not found."
     exit 1
 fi
-
-echo "[OK] gnome-extensions found."
-
-# ------------------------------------------------------------
-# Check asusctl
-# ------------------------------------------------------------
 
 if ! command -v asusctl >/dev/null 2>&1; then
-    echo
-    echo "ERROR: asusctl was not found."
-    echo
-    echo "ASUS GPU Switcher requires asusctl/asusd."
-    echo "Install ASUS Linux support for your distribution first."
+    echo "ERROR: asusctl was not found. Install asusctl first."
     exit 1
 fi
-
-echo "[OK] asusctl found."
-
-# ------------------------------------------------------------
-# Check ASUS Armoury
-# ------------------------------------------------------------
 
 if ! asusctl armoury list >/dev/null 2>&1; then
-    echo
-    echo "ERROR: ASUS Armoury controls are not available."
-    echo
-    echo "Your system may not have the required ASUS"
-    echo "driver/asusd support for GPU switching."
+    echo "ERROR: ASUS Armoury controls are not available on this machine."
     exit 1
 fi
 
-echo "[OK] ASUS Armoury controls available."
-
-# ------------------------------------------------------------
-# Check required GPU controls
-# ------------------------------------------------------------
-
-ARMOURY_OUTPUT="$(asusctl armoury list 2>/dev/null || true)"
-
-if ! grep -q "dgpu_disable" <<< "$ARMOURY_OUTPUT"; then
-    echo
-    echo "ERROR: GPU control 'dgpu_disable' was not found."
-    echo
-    echo "Your ASUS laptop may not support the GPU switching"
-    echo "interface required by this extension."
+if ! command -v curl >/dev/null 2>&1 || ! command -v tar >/dev/null 2>&1; then
+    echo "ERROR: curl and tar are required."
     exit 1
 fi
 
-if ! grep -q "gpu_mux_mode" <<< "$ARMOURY_OUTPUT"; then
-    echo
-    echo "ERROR: GPU control 'gpu_mux_mode' was not found."
-    echo
-    echo "Your ASUS laptop may not support the GPU MUX"
-    echo "interface required by this extension."
-    exit 1
-fi
-
-echo "[OK] GPU switching controls detected."
+echo "[OK] System checks passed."
 
 # ------------------------------------------------------------
-# Check curl
-# ------------------------------------------------------------
-
-if ! command -v curl >/dev/null 2>&1; then
-    echo
-    echo "ERROR: curl was not found."
-    echo
-    echo "Please install curl using your distribution's"
-    echo "package manager."
-    exit 1
-fi
-
-echo "[OK] curl found."
-
-# ------------------------------------------------------------
-# Create temporary directory
+# Download & Install Extension
 # ------------------------------------------------------------
 
 TEMP_DIR="$(mktemp -d)"
-ZIP_FILE="${TEMP_DIR}/${ZIP_NAME}"
-
-cleanup() {
-    rm -rf "$TEMP_DIR"
-}
-
+cleanup() { rm -rf "$TEMP_DIR"; }
 trap cleanup EXIT
 
-# ------------------------------------------------------------
-# Download latest release
-# ------------------------------------------------------------
+echo "Downloading latest version from GitHub..."
+curl -sSL "$TAR_URL" | tar -xz -C "$TEMP_DIR"
 
-echo
-echo "Downloading ASUS GPU Switcher..."
-echo
+echo "Installing extension to ${EXT_DIR}..."
+mkdir -p "$EXT_DIR"
+# Copy contents from extracted folder (asus-gpu-switcher-main)
+cp -r "$TEMP_DIR"/asus-gpu-switcher-main/* "$EXT_DIR"/
 
-curl -fL --progress-bar "$DOWNLOAD_URL" -o "$ZIP_FILE"
-
-echo
-echo "[OK] Download complete."
+echo "[OK] Files installed."
 
 # ------------------------------------------------------------
-# Install extension
+# Enable Extension
 # ------------------------------------------------------------
 
-echo
-echo "Installing GNOME extension..."
-
-gnome-extensions install --force "$ZIP_FILE"
-
-echo "[OK] Extension installed."
-
-# ------------------------------------------------------------
-# Enable extension
-# ------------------------------------------------------------
-
-echo
-echo "Enabling extension..."
-
+echo "Enabling GNOME extension..."
 if gnome-extensions enable "$UUID" >/dev/null 2>&1; then
-    echo "[OK] Extension enabled."
+    echo "[OK] Extension enabled successfully!"
 else
-    echo
-    echo "WARNING: GNOME could not enable the extension"
-    echo "in the current session."
-    echo
-    echo "Log out and log back in, then run:"
-    echo
+    echo "WARNING: Could not enable extension in active session."
+    echo "Please log out and log back in, then run:"
     echo "    gnome-extensions enable $UUID"
 fi
 
-# ------------------------------------------------------------
-# Finished
-# ------------------------------------------------------------
-
 echo
 echo "=========================================="
-echo "       Installation complete!"
+echo "       Installation Complete!"
 echo "=========================================="
-echo
-echo "ASUS GPU Switcher has been installed."
-echo
-echo "If it does not appear in GNOME Quick Settings,"
-echo "log out and log back in."
-echo
-echo "Check status:"
-echo "    gnome-extensions info $UUID"
-echo
-echo "Disable:"
-echo "    gnome-extensions disable $UUID"
-echo
-echo "Uninstall:"
-echo "    gnome-extensions uninstall $UUID"
-echo
