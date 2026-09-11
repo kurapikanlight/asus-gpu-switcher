@@ -1,5 +1,5 @@
 {
-  "uuid": "asus-gpu-switcher@kurapikanlight",
+  "uuid": "asus-gpu-switcher@kafeyn_",
   "name": "ASUS GPU Switcher",
   "description": "Switch between GPU modes (Integrated, Hybrid, NVIDIA) on ASUS laptops directly from GNOME Quick Settings. Requires asusctl and the asus-armoury kernel driver.",
   "shell-version": [
