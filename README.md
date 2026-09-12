@@ -51,7 +51,7 @@ There are two ways to install ASUS GPU Switcher.
 ### Method 1 — Install with `curl`
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/kurapikanlight/asus-gpu-switcher/main/installs/gnome/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/kurapikanlight/asus-gpu-switcher/main/install/gnome/install.sh | bash
 ```
 
 Then enable the extension:
@@ -82,8 +82,8 @@ sudo dnf install unzip
 Run the installer:
 
 ```bash
-chmod +x installs/gnome/install.sh
-./installs/gnome/install.sh
+chmod +x install/gnome/install.sh
+./install/gnome/install.sh
 ```
 
 Enable the extension:
