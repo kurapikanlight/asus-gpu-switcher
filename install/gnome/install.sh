@@ -62,10 +62,18 @@ trap cleanup EXIT
 echo "Downloading latest version from GitHub..."
 curl -sSL "$TAR_URL" | tar -xz -C "$TEMP_DIR"
 
+# Only the src/gnome-extension folder is used here — README, LICENSE,
+# install/, and src/kde are intentionally never copied.
+EXT_SRC="${TEMP_DIR}/asus-gpu-switcher-main/src/gnome-extension"
+
+if [[ ! -d "$EXT_SRC" ]]; then
+    echo "ERROR: GNOME extension source not found in downloaded archive."
+    exit 1
+fi
+
 echo "Installing extension to ${EXT_DIR}..."
 mkdir -p "$EXT_DIR"
-# Copy contents from extracted folder (asus-gpu-switcher-main)
-cp -r "$TEMP_DIR"/asus-gpu-switcher-main/* "$EXT_DIR"/
+cp -r "$EXT_SRC"/* "$EXT_DIR"/
 
 echo "[OK] Files installed."
 
