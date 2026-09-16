@@ -134,12 +134,6 @@ Remove the GNOME-only files:
 rm -rf src/gnome-extension install/gnome
 ```
 
-Install the KDE Plasma plasmoid:
-
-```bash
-kpackagetool6 --type Plasma/Applet --install src/kde
-```
-
 If you'd rather use `git clone` instead:
 
 ```bash
@@ -147,7 +141,7 @@ git clone https://github.com/kurapikanlight/asus-gpu-switcher.git
 cd asus-gpu-switcher
 ```
 
-Then install the plasmoid:
+Install the plasmoid:
 
 ```bash
 kpackagetool6 --type Plasma/Applet --install src/kde
