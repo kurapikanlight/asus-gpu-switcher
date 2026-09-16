@@ -14,16 +14,11 @@ PlasmoidItem {
     property string statusMessage: ""
     property bool showRestartPrompt: false
 
-    // ---- exact same shell-out mechanism as extension.js's _runCommand,
-    // just using Plasma's "executable" data engine instead of Gio.Subprocess.
     Plasma5Support.DataSource {
         id: executable
         engine: "executable"
         connectedSources: []
 
-        // sourceName === the exact command string we called connectSource() with.
-        // pendingApply maps that command string -> the GPU mode name it belongs to,
-        // so we know how to react once it exits (extension.js knew this via closure).
         property var pendingApply: ({})
         readonly property string refreshCmd: "asusctl armoury list"
 
@@ -32,13 +27,9 @@ PlasmoidItem {
         }
 
         onNewData: (sourceName, data) => {
-            console.log("[gpu-switcher] onNewData fired for:", sourceName);
-            console.log("[gpu-switcher] raw data:", JSON.stringify(data));
-
             var stdout = data["stdout"] || "";
             var stderr = data["stderr"] || "";
-            // Key name for the exit code isn't 100% confirmed on KF6 yet -
-            // check both spellings, and log if neither is present.
+
             var exitCode = data["exit code"];
             if (exitCode === undefined)
                 exitCode = data["exitCode"];
@@ -88,8 +79,7 @@ PlasmoidItem {
         root.statusMessage = "";
         root.showRestartPrompt = false;
 
-        // same two commands, same order (dgpu_disable then gpu_mux_mode) as extension.js.
-        // chained with && so the second only runs if the first succeeds.
+        
         var cmd = "asusctl armoury set dgpu_disable " + mode.dgpu +
                   " && asusctl armoury set gpu_mux_mode " + mode.mux;
         console.log("[gpu-switcher] running command:", cmd);
@@ -115,7 +105,6 @@ PlasmoidItem {
         Button {
             text: "Integrated"
             onClicked: {
-                console.log("[gpu-switcher] Integrated button clicked");
                 root.changeMode("Integrated");
             }
         }
@@ -123,7 +112,6 @@ PlasmoidItem {
         Button {
             text: "Hybrid"
             onClicked: {
-                console.log("[gpu-switcher] Hybrid button clicked");
                 root.changeMode("Hybrid");
             }
         }
@@ -131,7 +119,6 @@ PlasmoidItem {
         Button {
             text: "NVIDIA"
             onClicked: {
-                console.log("[gpu-switcher] NVIDIA button clicked");
                 root.changeMode("NVIDIA");
             }
         }
