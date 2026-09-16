@@ -1,0 +1,12 @@
+{
+    "KPlugin": {
+        "Id": "asus-gpu-switcher",
+        "Name": "ASUS GPU Switcher",
+        "Description": "Switch between Integrated, Hybrid, and NVIDIA GPU modes on ASUS laptops.",
+        "Version": "1.0.1",
+        "License": "GPL-3.0-or-later",
+        "Website": "https://github.com/kurapikanlight/asus-gpu-switcher",
+        "Category": "System"
+    },
+    "KPackageStructure": "Plasma/Applet"
+}
