@@ -84,11 +84,51 @@ fi
 
 echo "[OK] Plasmoid installed."
 
+# ------------------------------------------------------------
+# Auto-add to panel (best effort)
+# ------------------------------------------------------------
+# Plasma exposes a scripting API over D-Bus that can add a widget
+# to a live panel, the same mechanism Plasma's own layout scripts
+# use. If it fails for any reason, we fall back to telling the
+# user to add it manually - nothing here is required for the
+# plasmoid itself to work.
+
+QDBUS=""
+if command -v qdbus6 >/dev/null 2>&1; then
+    QDBUS="qdbus6"
+elif command -v qdbus >/dev/null 2>&1; then
+    QDBUS="qdbus"
+fi
+
+WIDGET_ADDED=0
+
+if [[ -n "$QDBUS" ]]; then
+    SCRIPT='
+        var allPanels = panels();
+        if (allPanels.length > 0) {
+            var panel = allPanels[0];
+            panel.addWidget("'"${PLASMOID_ID}"'");
+            print("ADDED");
+        } else {
+            print("NO_PANEL");
+        }
+    '
+    RESULT="$("$QDBUS" org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "$SCRIPT" 2>/dev/null || true)"
+
+    if [[ "$RESULT" == *"ADDED"* ]]; then
+        echo "[OK] Widget added to your panel automatically."
+        WIDGET_ADDED=1
+    fi
+fi
+
 echo
 echo "=========================================="
 echo "       Installation Complete!"
 echo "=========================================="
 echo
-echo "Add it to your panel or system tray:"
-echo "  Right-click a panel -> Add Widgets -> search 'ASUS GPU Switcher'"
-echo
+
+if [[ "$WIDGET_ADDED" -eq 0 ]]; then
+    echo "Add it to your panel or system tray manually:"
+    echo "  Right-click a panel -> Add Widgets -> search 'ASUS GPU Switcher'"
+    echo
+fi
