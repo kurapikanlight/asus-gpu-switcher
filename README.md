@@ -29,16 +29,16 @@ This project provides a simpler desktop experience for switching GPU modes — o
 
 **ASUS GPU Switcher** adds GPU controls directly to your desktop:
 
-- On **GNOME**, it lives in **GNOME Quick Settings**.
-- On **KDE Plasma**, it's a **plasmoid** you add to your panel or system tray.
+* On **GNOME**, it lives in **GNOME Quick Settings**.
+* On **KDE Plasma**, it's a **plasmoid** you can add to your panel or system tray.
 
 Depending on your ASUS laptop, it can provide:
 
-- 🟢 **Integrated** — use the integrated GPU.
-- 🔵 **Hybrid** — use the integrated GPU normally while allowing applications to use the NVIDIA GPU.
-- 🟠 **NVIDIA** — use the NVIDIA GPU as the primary graphics device.
+* 🟢 **Integrated** — use the integrated GPU.
+* 🔵 **Hybrid** — use the integrated GPU normally while allowing applications to use the NVIDIA GPU.
+* 🟠 **NVIDIA** — use the NVIDIA GPU as the primary graphics device.
 
-**A reboot is required when switching GPU modes** so that the new graphics configuration can be applied correctly.
+> **A reboot is required when switching GPU modes** so that the new graphics configuration can be applied correctly.
 
 ---
 
@@ -60,7 +60,7 @@ Pick the section for your desktop environment below.
 curl -fsSL https://raw.githubusercontent.com/kurapikanlight/asus-gpu-switcher/main/install/gnome/install.sh | bash
 ```
 
-This only ever installs the GNOME extension files (`src/gnome-extension`) — nothing KDE-related is downloaded permanently.
+This only installs the GNOME extension files (`src/gnome-extension`) — nothing KDE-related is installed.
 
 Then enable the extension:
 
@@ -72,25 +72,39 @@ Log out and back in if GNOME does not immediately show the extension.
 
 #### Method 2 — Manual download
 
+Download the repository:
+
 ```bash
 curl -L -o asus-gpu-switcher.zip https://github.com/kurapikanlight/asus-gpu-switcher/archive/refs/heads/main.zip
 unzip asus-gpu-switcher.zip
 cd asus-gpu-switcher-main
+```
 
-If you'd rather use `git clone` instead of downloading a zip, that works the same way — just replace the first two lines with:
+If you'd rather use `git clone` instead:
 
 ```bash
 git clone https://github.com/kurapikanlight/asus-gpu-switcher.git
 cd asus-gpu-switcher
 ```
 
-# Remove the KDE-only files — not needed for a GNOME install
+Remove the KDE-only files:
+
+```bash
 rm -rf src/kde install/kde
+```
 
-# Install just the GNOME extension
+Install the GNOME extension:
+
+```bash
 mkdir -p ~/.local/share/gnome-shell/extensions/asus-gpu-switcher@kurapikanlight
-cp -r src/gnome-extension/* ~/.local/share/gnome-shell/extensions/asus-gpu-switcher@kurapikanlight/
 
+cp -r src/gnome-extension/* \
+  ~/.local/share/gnome-shell/extensions/asus-gpu-switcher@kurapikanlight/
+```
+
+Enable the extension:
+
+```bash
 gnome-extensions enable asus-gpu-switcher@kurapikanlight
 ```
 
@@ -106,35 +120,51 @@ curl -fsSL https://raw.githubusercontent.com/kurapikanlight/asus-gpu-switcher/ma
 
 #### Method 2 — Manual download, keeping only the KDE files
 
+Download the repository:
+
 ```bash
 curl -L -o asus-gpu-switcher.zip https://github.com/kurapikanlight/asus-gpu-switcher/archive/refs/heads/main.zip
 unzip asus-gpu-switcher.zip
 cd asus-gpu-switcher-main
+```
 
-# Remove the GNOME-only files — not needed for a KDE install
+Remove the GNOME-only files:
+
+```bash
 rm -rf src/gnome-extension install/gnome
+```
 
-# Install just the KDE plasmoid
+Install the KDE Plasma plasmoid:
+
+```bash
 kpackagetool6 --type Plasma/Applet --install src/kde
 ```
 
-If you'd rather use `git clone` instead of downloading a zip:
+If you'd rather use `git clone` instead:
 
 ```bash
 git clone https://github.com/kurapikanlight/asus-gpu-switcher.git
 cd asus-gpu-switcher
 ```
 
-#### 📌 Making it visible on your panel (KDE)
+Then install the plasmoid:
 
-Unlike GNOME, KDE Plasma doesn't have a single command to "enable" a widget — installing it just makes it available, the same way installing an app adds it to your launcher. To actually see and use it:
+```bash
+kpackagetool6 --type Plasma/Applet --install src/kde
+```
 
-1. Right-click an empty area of your panel (or the system tray).
+#### 📌 Making it visible on your panel
+
+Unlike GNOME, KDE Plasma doesn't have a single command to "enable" a widget. Installing it makes it available to Plasma, similar to installing an application.
+
+To add it to your panel:
+
+1. Right-click an empty area of your panel.
 2. Choose **Add Widgets...**
-3. Search for **"ASUS GPU Switcher"**.
-4. Drag it onto your panel or system tray.
+3. Search for **ASUS GPU Switcher**.
+4. Drag it onto your panel.
 
-That's a one-time step — once it's on your panel, Plasma remembers it across reboots and logins, just like any other widget.
+This is a one-time step. Plasma remembers the widget across reboots and logins.
 
 ---
 
@@ -142,20 +172,22 @@ That's a one-time step — once it's on your panel, Plasma remembers it across r
 
 The project requires a supported ASUS gaming laptop with the appropriate ASUS Linux GPU-control functionality, including `asusctl` where required.
 
-- **GNOME**: GNOME Shell versions **45, 46, 47, 48, 49 and 50**.
-- **KDE Plasma**: **Plasma 6**, with `kpackagetool6` available.
+* **GNOME:** GNOME Shell versions **45, 46, 47, 48, 49, and 50**
+* **KDE Plasma:** **Plasma 6**, with `kpackagetool6` available
+* A supported ASUS gaming laptop with compatible firmware and GPU hardware
+* Appropriate NVIDIA/AMD graphics drivers
 
 GPU switching depends on the laptop's firmware, drivers, kernel, and hardware configuration.
 
-**Rebooting after changing the GPU mode is required.**
+> **Rebooting after changing the GPU mode is required.**
 
 ---
 
 ## 🧪 Project status
 
-- [x] GNOME implementation
-- [x] KDE Plasma implementation
-- [ ] Exploring support for other desktop environments / GUIs
+* [x] GNOME implementation
+* [x] KDE Plasma implementation
+* [ ] Exploring support for other desktop environments / GUIs
 
 ---
 
@@ -177,11 +209,11 @@ Contributions, testing, bug reports, and ideas are welcome.
 
 You can help by:
 
-- 🐛 Reporting issues
-- 🧪 Testing on different ASUS gaming laptops
-- 💡 Suggesting features
-- 🔧 Submitting fixes
-- 📖 Improving documentation
+* 🐛 Reporting issues
+* 🧪 Testing on different ASUS gaming laptops
+* 💡 Suggesting features
+* 🔧 Submitting fixes
+* 📖 Improving documentation
 
 ---
 
@@ -189,10 +221,10 @@ You can help by:
 
 **Developer:** kurapikanlight
 
-**GitHub:**  
+**GitHub:**
 https://github.com/kurapikanlight
 
-**Project:**  
+**Project:**
 https://github.com/kurapikanlight/asus-gpu-switcher
 
 For code contributions, open a **Pull Request**.
@@ -209,10 +241,10 @@ See the repository license for the terms under which this project is distributed
 
 If ASUS GPU Switcher is useful to you:
 
-- ⭐ Star the repository
-- 🧪 Test it on your ASUS gaming laptop (GNOME or KDE)
-- 🐛 Report problems
-- 💡 Contribute improvements
+* ⭐ Star the repository
+* 🧪 Test it on your ASUS gaming laptop (GNOME or KDE)
+* 🐛 Report problems
+* 💡 Contribute improvements
 
 ---
 
