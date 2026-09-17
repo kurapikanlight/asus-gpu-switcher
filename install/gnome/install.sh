@@ -8,7 +8,7 @@ set -euo pipefail
 # ============================================================
 
 REPO="kurapikanlight/asus-gpu-switcher"
-UUID="asus-gpu-switcher@kurapikanlight"
+UUID="asus-gpu-switcher@kafeyn_"
 TAR_URL="https://github.com/${REPO}/archive/refs/heads/main.tar.gz"
 EXT_DIR="${HOME}/.local/share/gnome-shell/extensions/${UUID}"
 
